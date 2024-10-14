@@ -23,32 +23,61 @@ class genericOpenGLWidget(QOpenGLWidget):
         self.first_mouse = True
         self.camera_speed = 0.05
         self.setMouseTracking(True)
-    def animatefun(self, animate):
-        xoffset = 1
-        yoffset = 1
-        i = 1
-        while i <10000:
-            i += 1
+    def animatefun(self,  atom_positions):
+        self.atom_positions = atom_positions
+        #positions_array = np.array([pos['position'] for pos in self.atom_positions])
+        
+        try:
+            positions_array = np.array([pos['position'] for pos in self.atom_positions])
+            print(positions_array)
+            print("positions_array shape:", positions_array.shape)
+            # Ensure it's a 2D array with shape (N, 3)
+            if positions_array.shape[1] != 3:
+                raise ValueError("Each atom's position must be a 3D vector.")
+        except Exception as e:
+            print(f"Error with atom positions: {e}")
+            return
 
-            yaw_rotation = np.array([
-                [xoffset+1, 0, xoffset+1],
-                [0, 1, 0],
-                [-xoffset-1, 0, xoffset+1]
-            ])
-            pitch_rotation = np.array([
-                [1, 0, 0],
-                [0, yoffset+1, -yoffset-1],
-                [0, yoffset+1, yoffset-1]
-            ])
-            rotation_matrix = np.dot(pitch_rotation, yaw_rotation)
-            if np.any(self.atom_positions):
-                ind = -1
-                for atom in self.atom_positions:
-                    ind += 1
-                    new_pos = np.dot(rotation_matrix, self.atom_positions[ind]['position'])
-                             
-                    self.atom_positions[ind]['position'] = new_pos
+        def center_protein(positions_array):
+            centroid = np.mean(positions_array, axis=0)
+            centered_positions = positions_array - centroid
+#            centered_positions = [Vec3(*pos) * nanometers for pos in centered_positions]
+            return centered_positions, centroid
+        def rotate_protein(positions_array, rotation_matrix):
+            centered_positions, centroid = center_protein(positions_array)
+            rotated_positions = np.dot(centered_positions, rotation_matrix.T)
+            rotated_positions += centroid
+            return rotated_positions
+        yaw_rotation = np.array([
+    [np.cos(np.pi/4), 0, np.sin(np.pi/4)],
+    [0, 1, 0],
+    [-np.sin(np.pi/4), 0, np.cos(np.pi/4)]
+])
+
+        pitch_rotation = np.array([
+        [1, 0, 0],
+        [0, np.cos(np.pi/6), -np.sin(np.pi/6)],
+        [0, np.sin(np.pi/6), np.cos(np.pi/6)]
+    ])
+        rotation_matrix = np.dot(pitch_rotation, yaw_rotation)
+        if np.any(self.atom_positions):
+            g = 0
+            original_positions = positions_array.copy()
+            positions_array = center_protein(positions_array)
+            while g < 720:
+                try:
+                    print("Starting loop:", g)
+                    # Apply the rotation
+                    rotated_positions = rotate_protein(positions_array, rotation_matrix)
+                    positions_array = rotated_positions
+                    self.paintGL()
+                    g += 1
+                    print("Iteration:", g)
+                except Exception as e:
+                    print(f"Error in rotation: {e}")
+                    break
         else:
+            print("error you failed bahahahahahahah")
             pass
     def zoomout(self):
         self.camera_pos = np.array([0.0, 0.0, 20.0], dtype=np.float32)

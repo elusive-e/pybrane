@@ -6,6 +6,10 @@ from OpenGL import GLU
 #from openmm.app import app
 from openmm import *
 from openmm.unit import *
+from openmm.app import *
+from openmm import *
+from openmm.unit import *
+from sys import stdout
 import pandas as pd
 import MDAnalysis
 import numpy as np
@@ -18,7 +22,7 @@ import requests
 from opengl_generic import genericOpenGLWidget
 from protein_inserter import protein_inserter_master
 from membrane_maker import membrane_generator_master
-from pybraneui import Ui_MainWindow
+from pybraneui12 import Ui_MainWindow
 import webbrowser
 #from bs4 import BeautifulSoup
 
@@ -51,6 +55,7 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.saf = self.search_and_files(self)
         self.mem_sim = self.MemMaker(self)
         self.ana = self.analysis_tab(self)
+        self.simsim = self.simulation_tab(self)
         self.mem_load_but1.clicked.connect(self.mem_sim.load_file_mem_maker)
         self.start_mem_make_but.clicked.connect(self.mem_sim.start_membrane_maker)
         self.pushButton.clicked.connect(self.activate_michael)
@@ -136,7 +141,7 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
                 window.close()
         def openCode(self):
-            webbroser.open('https://github.com/elusive-e/pybrane/')
+            webbroser.open('https://github.com/elusive-e/pybrane-test')
         def openDes(self):
             webbrowser.open('https://docs.google.com/document/d/1wC15w-dslcr8ldQVXFAwXhFO_FgcyzRXRvuou7haHK0/pub')
         def makeSmall(self):
@@ -195,7 +200,7 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             data = []
             pdb_request = window.lineEdit_3.text().strip()
             if self.cs == None:
-                self.cs = ChemSpider('KEY HERE')
+                self.cs = ChemSpider('3G9Vc3ehSXmA8dggOLpbNkxMYbYwQsWe')
             r = self.cs.search(self.pdb_request)
             try:
                 try:
@@ -252,12 +257,11 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     class analysis_tab:
         def __init__(self, MainMainWindow):
             self.MainMainWindow = MainMainWindow
-            self.animate = False
+            self.atom_positions=[]
         def zoom_in_max(self):
             viewerwindow.openGLWidget.zoomin()
         def auto_rotate(self):
-            self.animate = not self.animate
-            viewerwindow.openGLWidget.animatefun(self.animate)
+            viewerwindow.openGLWidget.animatefun(self.atom_positions)
         def open_viewer(self):
             viewerwindow.show()
         def zoom_out_max(self):
@@ -291,10 +295,11 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             'position': np.array([pos.x, pos.y, pos.z])
                         })
                 print(atom_positions)
+                self.atom_positions = atom_positions
                 viewerwindow.openGLWidget.setFocus()
                 viewerwindow.openGLWidget.raise_()
                 viewerwindow.openGLWidget.set_coordinates(atom_positions) 
-            
+                
             else:
                 window.textBrowser_13.append("WARNING: The file chosen is not the correct format or has not been picked.")
         def save_file(self):
@@ -386,11 +391,12 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 window.figure4.grid(True)
             
     class simulation_tab:
-        def __init__(self):
-            super(MainMainWindow, self).__init__()
-            self.forcefield = forcefield
-            self.pdb = pdb
-            self.mem = mem
+        def __init__(self, MainMainWindow):
+            self.MainMainWindow = MainMainWindow
+            #super(MainMainWindow, self).__init__()
+            self.forcefield = None
+            self.pdb = None
+            self.mem = None
             self.macro_other = []
         def start_simulation(self, pdb, forcefield, mem):
             modeller = Modeller(pdb.topology, pdb.positions)
@@ -416,8 +422,9 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if file_path:
                 with open(file_path, 'r') as file:
                     content = file.read()
-                self.forcefield = ForceField(content)
-            
+                forcefield = ForceField(file_path)
+                window.simsim.forcefield = forcefield
+                window.textBrowser_13.append("Forcefield file was succesfully loaded.")
             else:
                 window.textBrowser_13.append("WARNING: The file chosen is not the correct format or has not been picked.")
             
@@ -426,8 +433,9 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if file_path:
                 with open(file_path, 'r') as file:
                     content = file.read()
-                self.pdb = PDBFile(content)
-            
+                pdb = PDBFile(file_path)
+                window.simsim.pdb = pdb
+                window.textBrowser_13.append("PDB file was succesfully loaded.")
             else:
                 window.textBrowser_13.append("WARNING: The file chosen is not the correct format or has not been picked.")
     
@@ -436,8 +444,9 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if file_path:
                 with open(file_path, 'r') as file:
                     content = file.read()
-                self.mem = PDBFile(content)
-            
+                mem = PDBFile(file_path)
+                window.simsim.mem = mem
+                window.textBrowser_13.append("Membrane file was succesfully loaded.")
             else:
                 window.textBrowser_13.append("WARNING: The file chosen is not the correct format or has not been picked.")
         
@@ -446,8 +455,10 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if file_path:
                 with open(file_path, 'r') as file:
                     content = file.read()
-                content = PDBFile(content)
-                self.macro_other.append(content)
+                macro = PDBFile(file_path)
+                macro_other.append(macro)
+                window.simsim.macro_other = macro_other
+                window.textBrowser_13.append("Macromolecule file was succesfully loaded.")
             else:
                 window.textBrowser_13.append("WARNING: The file chosen is not the correct format or has not been picked.")
                      
@@ -456,7 +467,9 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if file_path:
                 with open(file_path, 'r') as file:
                     content = file.read()
-                self.sol = PDBFile(content)
+                sol = PDBFile(file_path)
+                window.simsim.sol = sol
+                window.textBrowser_13.append("Solvent file was succesfully loaded.")
             
             else:
                 window.textBrowser_13.append("WARNING: The file chosen is not the correct format or has not been picked.")
@@ -541,6 +554,7 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             'position': np.array([pos.x, pos.y, pos.z])
                         })
                     print(atom_positions)
+                    self.atom_positions = atom_positions
                     window.openGLWidget.setFocus()
                     window.openGLWidget.raise_()
                     window.openGLWidget.set_coordinates(atom_positions)
@@ -606,21 +620,26 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             atom_1 = atomdialog.spinBox.value()
             addatom = atomdialog.radioButton.isChecked()
             removeatom = atomdialog.radioButton_2.isChecked()
-            rw_user_mol = Chem.RWMol(self.mol_input)
-            user_atom_index = atomdialog.spinBox(value)
+            mol_input = window.mmmm.mol_input
+            rw_user_mol = Chem.RWMol(mol_input)
+            user_atom_index = atomdialog.spinBox.value()
             try:
-                if addbond and removebond == True:
-                    window.textBox_18.append("WARNING: You must pick one atom action, not both.")
-                if addatom == True:
+                if addatom and removeatom:
+                    window.textBrowser_18.append("WARNING: You must pick one atom action, not both.")
+                if addatom:
+                    new_atom = Chem.Atom(user_atom_index)  # 6 is the atomic number for Carbon (C)
                     rw_user_mol.AddAtom(user_atom_index)
-                if removeatom == True:
+                    window.textBrowser_18.append(f"Atom added at index: {rw_user_mol.GetNumAtoms() - 1}")
+
+                if removeatom:
                     rw_user_mol.RemoveAtom(user_atom_index)
+                    window.textBrowser_18.append(f"Atom removed at index: {user_atom_index}")
                 else:
-                    window.textBox_18.append("WARNING: You must pick one atom action, not none")
+                    window.textBrowser_18.append("WARNING: You must pick one atom action, not none")
                 self.mol_input = rw_user_mol
-                self.update_display()
-            except:
-                winodw.textBrowser_18.append("ERROR: The atom picked could not be updated.")
+                window.mmmm.update_display(rw_user_mol)
+            except Exception as e:
+                window.textBrowser_18.append(f"Error: {str(e)}")
                 
                 
     class MemMaker:
