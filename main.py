@@ -8,6 +8,7 @@ from openmm import *
 from openmm.unit import *
 from openmm.app import *
 from openmm import *
+from pdbfixer import PDBFixer
 from openmm.unit import *
 from sys import stdout
 import pandas as pd
@@ -17,6 +18,7 @@ import random
 import sys
 import re
 import subprocess
+import pdbfixer
 import requests
 #import yaml
 from opengl_generic import genericOpenGLWidget
@@ -29,7 +31,14 @@ import webbrowser
 # from chatterbot import ChatBot
 # from chatterbot.trainers import ListTrainer
 # from chatterbot.trainers import ChatterBotCorpusTrainer
-
+import sys
+import matplotlib
+matplotlib.use('Qt5Agg')
+import matplotlib.pyplot as plt
+from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+import random
 from rdkit.Chem import rdDepictor as rdd
 from rdkit.Chem.Draw import rdMolDraw2D as draw2D
 from rdkit import Chem
@@ -398,26 +407,59 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.pdb = None
             self.mem = None
             self.macro_other = []
-        def start_simulation(self, pdb, forcefield, mem):
-            modeller = Modeller(pdb.topology, pdb.positions)
-            modeller.addSolvent(forcefield, model='tip3p', padding=1.0*nanometers)
-
-            system = forcefield.createSystem(pdb.topology, nonbondedMethod=PME, nonbondedCutoff=1*nanometer, constraints=HBonds)
-            params = CharmmParameterSet('toppar/top_all36_lipid.rtf', 'toppar/par_all36_lipid.prm')
-            integrator = LangevinIntegrator(300*kelvin, 1/picosecond, 0.002*picoseconds)
             
-            simulation = Simulation(modeller.topology, system, integrator)
-            simulation.context.setPositions(modeller.positions)
-            simulation.minimizeEnergy()
-            simulation.context.setVelocitiesToTemperature(300*kelvin)
-            simulation.step(1000)
-            simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, potentialEnergy=True, temperature=True))
-            simulation.reporters.append(DCDReporter('trajectory.dcd', 1000))
-            simulation.step(10000)
-            positions = simulation.context.getState(getPositions=True).getPositions()
-            PDBFile.writeFile(pdb.topology, positions, open('output.pdb', 'w'))
-        
+        def start_simulation(self):
+            forcefield = window.simsim.forcefield
+            pdb = window.simsim.pdb
+            
+            window.textBrowser_13.append(f"NOTICE: The simulation was started. Inputs: {pdb, forcefield}")
+            try: 
+                modeller = Modeller(pdb.topology, pdb.positions)
+                mem = window.simsim.mem
+                if mem == None:
+                    window.textBrowser_13.append("NOTICE: No mmebrane was selected, creating a default.")
+                    modeller.addMembrane(forcefield, lipidType='POPC', minimumPadding=1*nanometer)
+                else:
+                    modeller.add(mem.topology, mem.positions)
+                    modeller.addSolvent(forcefield, model='tip3p', padding=1.0*nanometers)
+                print(f"Number of atoms in topology: {pdb.topology.atoms()}")
+                print(f"Number of positions: {pdb.positions}")
+                window.textBrowser_13.append("NOTICE: The modeller was created.")
+
+                system = forcefield.createSystem(modeller.topology, nonbondedMethod=PME, nonbondedCutoff=1*nanometer, constraints=HBonds)
+
+                window.textBrowser_13.append("NOTICE: The system was created.")
+                print(f"Number of atoms in modeller: {modeller.topology.getNumAtoms()}")
+                print(f"Number of particles in system: {system.getNumParticles()}")
+
+                integrator = LangevinIntegrator(300*kelvin, 1/picosecond, 0.002*picoseconds)
+                window.textBrowser_13.append("NOTICE: The intergator was created.")
+                simulation = Simulation(modeller.topology, system, integrator)
+                window.textBrowser_13.append("NOTICE: The simulation was created.")
+                simulation.context.setPositions(modeller.positions)
+                window.textBrowser_13.append("NOTICE: The position were set.")
+                simulation.minimizeEnergy()
+                window.textBrowser_13.append("NOTICE: Energy was minimized.")
+                simulation.context.setVelocitiesToTemperature(300*kelvin)
+                window.textBrowser_13.append("NOTICE: The temperature was set.")
+                
+                simulation.reporters.append(StateDataReporter(stdout, 1000, step=True, potentialEnergy=True, temperature=True))
+                simulation.reporters.append(DCDReporter('trajectory.dcd', 1000))
+                
+                window.textBrowser_13.append("NOTICE: The simulation is running...")
+
+                simulation.step(10000)
+                positions = simulation.context.getState(getPositions=True).getPositions()
+                with open('output.pdb', 'w') as output_file:
+                    PDBFile.writeFile(simulation.topology, positions, output_file)
+                window.textBrowser_13.append("NOTICE: The simulation is finished.")
+            except Exception as e:
+                window.textBrowser_13.append(f"ERROR: {e}")
         def load_sim_ff(self):
+            forcefield = ForceField('charmm36.xml','charmm36/water.xml')            #forcefield.loadFile('lipid17.xml')
+           # forcefield.loadFile('tip3p-pme-b.xml')
+            window.simsim.forcefield = forcefield
+            window.textBrowser_13.append("NOTICE: Default forcefield was loaded, you may now pick custom force field or cancel the operation to use default.")
             file_path, _ = QtWidgets.QFileDialog.getOpenFileName(window, "Open File", "", "All Files (*)")
             if file_path:
                 with open(file_path, 'r') as file:
@@ -426,14 +468,22 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 window.simsim.forcefield = forcefield
                 window.textBrowser_13.append("Forcefield file was succesfully loaded.")
             else:
-                window.textBrowser_13.append("WARNING: The file chosen is not the correct format or has not been picked.")
+                window.simsim.forcefield = forcefield
+                window.textBrowser_13.append("WARNING: The file chosen is not the correct format or has not been picked, the default forcefield is being invoked.")
             
         def load_sim_pro(self):
             file_path, _ = QtWidgets.QFileDialog.getOpenFileName(window, "Open File", "", "All Files (*)")
             if file_path:
                 with open(file_path, 'r') as file:
                     content = file.read()
-                pdb = PDBFile(file_path)
+                fixer = PDBFixer(file_path)
+                fixer.findMissingResidues()
+                fixer.findMissingAtoms()
+                fixer.addMissingAtoms()
+                fixer.addMissingHydrogens()
+                with open('fixed_structure.pdb', 'w') as f:
+                    PDBFile.writeFile(fixer.topology, fixer.positions, f)
+                pdb = PDBFile('fixed_structure.pdb')
                 window.simsim.pdb = pdb
                 window.textBrowser_13.append("PDB file was succesfully loaded.")
             else:
@@ -444,7 +494,20 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if file_path:
                 with open(file_path, 'r') as file:
                     content = file.read()
-                mem = PDBFile(file_path)
+                fixer = PDBFixer(file_path)
+                window.textBrowser_13.append("fixer was activated :)")
+    
+                fixer.findMissingResidues()
+                window.textBrowser_13.append("we found nemo (missing residues) :)")
+                fixer.findMissingAtoms()
+                window.textBrowser_13.append("we found dory (missing atoms) :)")
+                fixer.addMissingAtoms()
+                window.textBrowser_13.append("oh helm yeah we added the missing atoms :)")
+                #fixer.addMissingHydrogens()
+                window.textBrowser_13.append("we added the hydrogens! chat :)")
+                with open('fixed_mem_structure.pdb', 'w') as f:
+                    PDBFile.writeFile(fixer.topology, fixer.positions, f)
+                mem = PDBFile('fixed_mem_structure.pdb')
                 window.simsim.mem = mem
                 window.textBrowser_13.append("Membrane file was succesfully loaded.")
             else:
@@ -664,7 +727,7 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         def start_membrane_maker(self):
             self.n_lipids_x = window.x_spin_box.value()
             self.n_lipids_y = window.y_spin_box.value()
-            self.box_z = windowz_spin_box.value()
+            self.box_z = window.z_spin_box.value()
             self.spacing = window.spacing_spin.value()
             self.membrane_size = (self.n_lipids_x, self.n_lipids_y, self.box_z)
             self.membrane_file = 'membrane_maker_output.pdb'
