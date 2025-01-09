@@ -334,70 +334,30 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
                 window.Text_browser13.append("WARNING: No file name provided, file HAS NOT BEEN SAVED. Please try again.")
         def update_graphs(self, output):
-            u = mda.Universe('output.pdb''trajectory.dcd')
-            protein = u.select_atoms('protein')
-            uni = u.universe()
-            rog_values = []
-            com_value = []
-            cog_values = []
-            tm_value = []
-            tc_values = []
-            for ts in u.trajectory:
-                rog = protein.radius_of_gyration()
-                com = uni.atoms.center_of_mass()
-                com_values.append(rog)
-                cog = uni.atoms.center_of_geometry()
-                cog_values.append(cog)
-                tm = uni.atoms.total_mass()
-                tm_values.append(tm)
-                tc = uni.atoms.total_charge()
-                tc_values.append(tc)
-                rog_values.append(rog)
-            rog_values = np.array(rog_values)
-            cog_values = np.array(cog_values)
-            tm_values = np.array(tm_values)
-            tc_values = np.array(tc_values)
-            com_values = np.array(com_values)
+            traj = md.load('output.pdb',top='trajectory.dcd')
+            #protein = u.select_atoms('protein')
+          
             def update_radiusOfGyration(self):
-                window.figure3.plot(u.trajectory.times, rog_values, label='Radius of Gyration')
-                window.figure3.xlabel('Time (ps)')
-                window.figure3.ylabel('Radius of Gyration (Å)')
-                window.figure3.title('Radius of Gyration of Protein Over Time')
-                window.figure3.legend()
-                window.figure3.grid(True)
+                rg = md.compute_rg(traj)
+                parameter = 0
+                window.insertgraphhere.update(rg, parameter)
             # window.figure3.show()   
             def update_centerOfGeometry(self):
-                window.figure2.figure(figsize=(8, 5))
-                window.figure2.plot(u.trajectory.times, rog_values, label='Center of Geometry')
-                window.figure2.xlabel('Time (ps)')
-                window.figure2.ylabel('Center of Geometry (Å)')
-                window.figure2.title('Center of Geometry of Protein Over Time')
-                window.figure2.legend()
-                window.figure2.grid(True)
+                rg = md.compute_rg(traj)
+                parameter = 1
+                window.insertgraphhere.update(rg, parameter)
             def update_totalMass(self):
-                window.figure.figure(figsize=(8, 5))
-                window.figure.plot(u.trajectory.times, rog_values, label='Total Mass')
-                window.figure.xlabel('Time (ps)')
-                window.figure.ylabel('Total Mass (Å)')
-                window.figure.title('Total Mass of Protein Over Time')
-                window.figure.legend()
-                window.figure.grid(True)
+                rg = md.compute_rg(traj)
+                parameter = 2
+                window.insertgraphhere.update(rg, parameter)
             def update_centerOfMass(self):
-                window.figure1.figure(figsize=(8, 5))
-                window.figure1.plot(u.trajectory.times, rog_values, label='Center of Mass')
-                window.figure1.xlabel('Time (ps)')
-                window.figure1.ylabel('Center of Mass (Å)')
-                window.figure1.title('Canter of Mass of Protein Over Time')
-                window.figure1.legend()
-                window.figure1.grid(True)
+                rg = md.compute_rg(traj)
+                parameter = 3
+                window.insertgraphhere.update(rg, parameter)
             def update_totalCharge(self):
-                window.figure4.figure(figsize=(8, 5))
-                window.figure4.plot(u.trajectory.times, rog_values, label='Total Charge')
-                window.figure4.xlabel('Time (ps)')
-                window.figure4.ylabel('Total Charge (Å)')
-                window.figure4.title('Total Charge of Protein Over Time')
-                window.figure4.legend()
-                window.figure4.grid(True)
+                rg = md.compute_rg(traj)
+                parameter = 4
+                window.insertgraphhere.update(rg, parameter)
             
     class simulation_tab:
         def __init__(self, MainMainWindow):
