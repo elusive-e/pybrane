@@ -142,7 +142,19 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             pass
             #see tab index, update the appropriate thing to be opened (maybe open optional screen to ask where they want it opened?)
         def openNew(self):
-            #ask what the user wants to be new, clear any inputs
+            tabNumber = window.tabWidget.currentIndex()
+            if tabNumber == 0:
+                pass
+                #clear the file that's made (blank pdb with a hydrogen prob)
+            if tabNumber == 1:
+                pass 
+                # stop the simulation if theres one running and clear all the settings
+            if tabNumber == 2:
+                pass
+                #clear all the settings and stop the simulaiton idk if theres a way to do that maybe like clear all the subprocesses
+            if tabNumber == 3:
+                pass
+                #clear the file and make a blank thingie
             pass
         def openQuit(self):
             tabNumber = window.tabWidget.currentIndex()
@@ -151,26 +163,30 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
                 window.close()
         def openCode(self):
-            webbroser.open('https://github.com/elusive-e/pybrane-test')
+            webbrowser.open('https://github.com/elusive-e/pybrane/')
         def openDes(self):
-            webbrowser.open('https://docs.google.com/document/d/1wC15w-dslcr8ldQVXFAwXhFO_FgcyzRXRvuou7haHK0/pub')
+            webbrowser.open('https://github.com/elusive-e/pybrane/wiki')
         def makeSmall(self):
             window.showMinimized()
         def makeBig(self):
             window.showMaximized()
         def acceptKey(self):
+            # TO DO: open the settings window
             cswindow.show()
         def adjustGraphs(self):
             #launch the graphs setting window, continue as normal
+            # TO DO: open the settings window
             pass
         def adjustViewer(self):
             #launch the viewer settngs with style changes and stuff
             pass
         def molView(self):
-            #open the tab with the analysis and launch the molecule viewer
+            #window.tabWidget.setCurrentIndex(1)
+            viewerwindow.show()
+            #add actual names 
             pass
         def molEdit(self):
-            # open the tab with the molecule editor
+            #window.tabWidget.setCurrentIndex(1)
             pass
     class search_and_files:
         def __init__(self, MainMainWindow):
@@ -320,6 +336,7 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         def minimize_viewer(self):
             viewerwindow.hide()
         def settings_graphs(self):
+            #add settings logic
             pass
         def expand_viewer(self):
             viewerwindow.showMaximized()
@@ -339,6 +356,7 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 data = md.compute_rg(traj)
                 parameter = 0
                 window.genericGraph_4.update(data, parameter)
+           ####
             def update_centerOfGeometry(self):
                 data = md.compute_rg(traj)
                 parameter = 1
@@ -351,6 +369,7 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 data = md.compute_rg(traj)
                 parameter = 3
                 window.genericGraph_1.update(data, parameter)
+            ####
             def update_totalCharge(self):
                 data = md.compute_rg(traj)
                 parameter = 4
@@ -383,21 +402,20 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 data = md.principal_moments(traj)
                 parameter = 11
                 window.genericGraph_5.update(data, parameter)
-                rmsf(target, reference[, frame, …])
-
-Compute RMSF of all conformations in target to a reference conformation.
-
-lprmsd(target, reference[, frame, …])
-
-Compute Linear-Programming Root-Mean-Squared Deviation (LP-RMSD) of all conformations in target to a reference
             try:
                 traj = md.load('trajectory.dcd',top='output.pdb')
-
-                update_radiusOfGyration(self)
-                update_centerOfGeometry(self)
-                update_totalMass(self)
-                update_centerOfMass(self)
-                update_totalCharge(self)
+                # add logic that gets the stuff from settings
+                if user_graph_choice == 1:
+                    update_radiusOfGyration(self)
+                elif user_graph_choice == 2:
+                    update_centerOfGeometry(self)
+                elif user_graph_choice == 3:
+                    update_totalMass(self)
+                elif user_graph_choice == 4:
+                    update_centerOfMass(self)
+                elif user_graph_choice == 5:
+                    update_totalCharge(self)
+                
             except Exception as e:
                 window.textBrowser_13.append(f"ERROR: {e}")
             
