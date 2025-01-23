@@ -12,7 +12,17 @@ class membrane_generator_master:
         self.n_lipids_y = None
         self.spacing = None
         self.box_z = None
-        self.final_box_z = None 
+        self.final_box_z = None
+        self.protein_files = None
+        self.rotation_matrices = None
+        self.membrane_size = None
+        self.membrane_file = None
+        self.final_box_z = None
+        self.output_file = None
+        self.protein_spacing = None
+    def start_generator(self, lipid_files, lipid_ratios, output_file, n_lipids_x, n_lipids_y, spacing, box_z, final_box_z):
+        if protein_spacing or rotation_matrices == None:
+            
     def generate_bilipid_membrane(self, lipid_files, lipid_ratios, output_file, n_lipids_x, n_lipids_y, spacing, box_z, final_box_z):
         self.lipid_files = lipid_files
         self.lipid_ratios = lipid_ratios
