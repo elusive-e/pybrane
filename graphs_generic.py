@@ -76,5 +76,20 @@ class genericGraph(QDialog):
             x_units = 'Time (ps)'
             y_units ='Total Charge (Å)'
             title='Total Charge of Protein Over Time'
+        if parameter == 4:
+            new_label='Total Charge'
+            x_units = 'Time (ps)'
+            y_units ='Total Charge (Å)'
+            title='Total Charge of Protein Over Time'
+        if parameter == 4:
+            new_label='Total Charge'
+            x_units = 'Time (ps)'
+            y_units ='Total Charge (Å)'
+            title='Total Charge of Protein Over Time'
+        if parameter == 4:
+            new_label='Total Charge'
+            x_units = 'Time (ps)'
+            y_units ='Total Charge (Å)'
+            title='Total Charge of Protein Over Time'
         
   
