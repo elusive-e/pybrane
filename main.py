@@ -50,7 +50,7 @@ import matplotlib
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
-#michael = ChatBot("Michael")
+from michaelai import michaelai
 matplotlib.use('Qt5Agg')
 import mdtraj as md
 
@@ -835,15 +835,15 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             
     def activate_michael(self):
         exit_conditions = (":q","quit","exit")
-        query = self.lineEdit.text().strip()
-        window.textBrowser_3.append(f'You: {query}')
+        PROMPT = self.lineEdit.text().strip()
+        window.textBrowser_3.append(f'You: {PROMPT}')
         window.lineEdit.clear()
         if query in exit_conditions:
             window.textBrowser_3.append("Michael: Goodbye! I hope I was able to help you today.")
         if query == '':
             window.textBrowser_3.append("Michael: Your response cannot be blank.")
         else:
-            window.textBrowser_3.append(f"Michael: {michael.get_response(query)}")
+            window.textBrowser_3.append(f"Michael: {michaelai.comp(PROMPT, MaxToken=3000, outputs=3)}")
              
 class CSInputWindow(QtWidgets.QDialog):
     def __init__(self):
