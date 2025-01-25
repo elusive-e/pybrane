@@ -26,11 +26,6 @@ from protein_inserter import protein_inserter_master
 from membrane_maker import membrane_generator_master
 from pybraneui12 import Ui_MainWindow
 import webbrowser
-#from bs4 import BeautifulSoup
-
-# from chatterbot import ChatBot
-# from chatterbot.trainers import ListTrainer
-# from chatterbot.trainers import ChatterBotCorpusTrainer
 import sys
 import matplotlib
 matplotlib.use('Qt5Agg')
@@ -1052,6 +1047,110 @@ class AtomManager(QtWidgets.QDialog):
     def acceptInput(self):
         window.molecule_maker_tab.manage_atoms(self)
         self.close()
+        
+class settings_ui(QtWidgets.QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setupUi()
+     def setupUi(self):
+        settings_ui.setObjectName("settings_ui")
+        settings_ui.resize(320, 638)
+        self.verticalLayout = QtWidgets.QVBoxLayout(settings_ui)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.input_label = QtWidgets.QLabel(settings_ui)
+        self.input_label.setObjectName("input_label")
+        self.verticalLayout.addWidget(self.input_label)
+        self.input_combo = QtWidgets.QComboBox(settings_ui)
+        self.input_combo.setObjectName("input_combo")
+        self.verticalLayout.addWidget(self.input_combo)
+        self.output_label = QtWidgets.QLabel(settings_ui)
+        self.output_label.setObjectName("output_label")
+        self.verticalLayout.addWidget(self.output_label)
+        self.output_combo = QtWidgets.QComboBox(settings_ui)
+        self.output_combo.setObjectName("output_combo")
+        self.verticalLayout.addWidget(self.output_combo)
+        self.output_label_3 = QtWidgets.QLabel(settings_ui)
+        self.output_label_3.setObjectName("output_label_3")
+        self.verticalLayout.addWidget(self.output_label_3)
+        self.lineEdit = QtWidgets.QLineEdit(settings_ui)
+        self.lineEdit.setObjectName("lineEdit")
+        self.verticalLayout.addWidget(self.lineEdit)
+        self.output_label_4 = QtWidgets.QLabel(settings_ui)
+        self.output_label_4.setObjectName("output_label_4")
+        self.verticalLayout.addWidget(self.output_label_4)
+        self.lineEdit_2 = QtWidgets.QLineEdit(settings_ui)
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.verticalLayout.addWidget(self.lineEdit_2)
+        self.output_label_2 = QtWidgets.QLabel(settings_ui)
+        self.output_label_2.setObjectName("output_label_2")
+        self.verticalLayout.addWidget(self.output_label_2)
+        self.checkBox = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox.setObjectName("checkBox")
+        self.verticalLayout.addWidget(self.checkBox)
+        self.checkBox_2 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_2.setObjectName("checkBox_2")
+        self.verticalLayout.addWidget(self.checkBox_2)
+        self.checkBox_5 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_5.setObjectName("checkBox_5")
+        self.verticalLayout.addWidget(self.checkBox_5)
+        self.checkBox_6 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_6.setObjectName("checkBox_6")
+        self.verticalLayout.addWidget(self.checkBox_6)
+        self.checkBox_4 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_4.setObjectName("checkBox_4")
+        self.verticalLayout.addWidget(self.checkBox_4)
+        self.checkBox_3 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_3.setObjectName("checkBox_3")
+        self.verticalLayout.addWidget(self.checkBox_3)
+        self.checkBox_10 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_10.setObjectName("checkBox_10")
+        self.verticalLayout.addWidget(self.checkBox_10)
+        self.checkBox_11 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_11.setObjectName("checkBox_11")
+        self.verticalLayout.addWidget(self.checkBox_11)
+        self.checkBox_12 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_12.setObjectName("checkBox_12")
+        self.verticalLayout.addWidget(self.checkBox_12)
+        self.checkBox_7 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_7.setObjectName("checkBox_7")
+        self.verticalLayout.addWidget(self.checkBox_7)
+        self.checkBox_8 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_8.setObjectName("checkBox_8")
+        self.verticalLayout.addWidget(self.checkBox_8)
+        self.checkBox_9 = QtWidgets.QCheckBox(settings_ui)
+        self.checkBox_9.setObjectName("checkBox_9")
+        self.verticalLayout.addWidget(self.checkBox_9)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+        self.buttonBox.setObjectName("buttonBox")
+        self.gridLayout.addWidget(self.buttonBox, 5, 0, 1, 1)
+        self.buttonBox.accepted.connect(self.acceptInput)
+        self.buttonBox.rejected.connect(self.reject)
+        
+
+        self.retranslateUi(settings_ui)
+        
+        QtCore.QMetaObject.connectSlotsByName(settings_ui)
+
+    def retranslateUi(self, settings_ui):
+        _translate = QtCore.QCoreApplication.translate
+        settings_ui.setWindowTitle(_translate("settings_ui", "PyBRANE Settings"))
+        self.input_label.setText(_translate("settings_ui", "Default Input File Type"))
+        self.output_label.setText(_translate("settings_ui", "Default Output File Type"))
+        self.output_label_3.setText(_translate("settings_ui", "ChemSpider API Key"))
+        self.output_label_4.setText(_translate("settings_ui", "OpenAI API Key"))
+        self.output_label_2.setText(_translate("settings_ui", "Trajectory Graphs"))
+        self.checkBox.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_2.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_5.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_6.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_4.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_3.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_10.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_11.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_12.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_7.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_8.setText(_translate("settings_ui", "CheckBox"))
+        self.checkBox_9.setText(_translate("settings_ui", "CheckBox"))
 
         
 if __name__ == "__main__":
@@ -1063,6 +1162,8 @@ if __name__ == "__main__":
     cswindow = CSInputWindow()
     cswindow.hide()
     viewerwindow = Viewer()
+    settings_ui = Settings()
+    Settings.hide()
     viewerwindow.hide()
     smilesdialog.hide()
     bonddialog.hide()
