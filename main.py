@@ -52,6 +52,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 import matplotlib.pyplot as plt
 #michael = ChatBot("Michael")
 matplotlib.use('Qt5Agg')
+import mdtraj as md
 
 
 
@@ -91,9 +92,9 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_26.clicked.connect(self.saf.search_chemspi)
         
         self.pushButton_27.clicked.connect(self.mmmm.switch_display)
-        self.pushButton_2.clicked.connect(self.ana.open_viewer)
-        self.pushButton_3.clicked.connect(self.ana.update_graphs)
-        self.pushButton_4.clicked.connect(self.ana.settings_graphs)
+        self.opengl_with_buttons.Button1.clicked.connect(self.ana.open_viewer)
+        self.opengl_with_buttons.Button2.clicked.connect(self.ana.update_graphs)
+        self.opengl_with_buttons.Button3.clicked.connect(self.ana.settings_graphs)
         self.actionNew.triggered.connect(self.mf.openNew)
         self.actionOpen.triggered.connect(self.mf.openOpen)
         self.actionSave.triggered.connect(self.mf.openSave)
@@ -333,31 +334,72 @@ class MainMainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 f.close()
             else:
                 window.Text_browser13.append("WARNING: No file name provided, file HAS NOT BEEN SAVED. Please try again.")
-        def update_graphs(self, output):
-            traj = md.load('output.pdb',top='trajectory.dcd')
-            #protein = u.select_atoms('protein')
-          
+        def update_graphs(self, output):            
             def update_radiusOfGyration(self):
-                rg = md.compute_rg(traj)
+                data = md.compute_rg(traj)
                 parameter = 0
-                window.insertgraphhere.update(rg, parameter)
-            # window.figure3.show()   
+                window.genericGraph_4.update(data, parameter)
             def update_centerOfGeometry(self):
-                rg = md.compute_rg(traj)
+                data = md.compute_rg(traj)
                 parameter = 1
-                window.insertgraphhere.update(rg, parameter)
+                window.genericGraph_5.update(data, parameter)
             def update_totalMass(self):
-                rg = md.compute_rg(traj)
+                data = md.compute_rg(traj)
                 parameter = 2
-                window.insertgraphhere.update(rg, parameter)
+                window.genericGraph_3.update(data, parameter)
             def update_centerOfMass(self):
-                rg = md.compute_rg(traj)
+                data = md.compute_rg(traj)
                 parameter = 3
-                window.insertgraphhere.update(rg, parameter)
+                window.genericGraph_1.update(data, parameter)
             def update_totalCharge(self):
-                rg = md.compute_rg(traj)
+                data = md.compute_rg(traj)
                 parameter = 4
-                window.insertgraphhere.update(rg, parameter)
+                window.genericGraph_5.update(data, parameter)
+            def update_rmsf(self):
+                data = md.compute_rg(traj)
+                parameter = 5
+                window.genericGraph_5.update(data, parameter)
+            def update_gyration_tensor(self):
+                data = md.compute_gyration_tensor(traj)
+                parameter = 6
+                window.genericGraph_5.update(data, parameter)
+            def update_rmsf(self):
+                data = md.asphericity(traj)
+                parameter = 7
+                window.genericGraph_5.update(data, parameter)
+            def update_gyration_tensor(self):
+                data = md.acylindricity(traj)
+                parameter = 8
+                window.genericGraph_5.update(data, parameter)
+            def update_rmsf(self):
+                data = md.principal_moments(traj)
+                parameter = 9
+                window.genericGraph_5.update(data, parameter)
+            def update_gyration_tensor(self):
+                data = md.relative_shape_antisotropy(traj)
+                parameter = 10
+                window.genericGraph_5.update(data, parameter)
+            def update_rmsf(self):
+                data = md.principal_moments(traj)
+                parameter = 11
+                window.genericGraph_5.update(data, parameter)
+                #rmsf(target, reference[, frame, …])
+
+# Compute RMSF of all conformations in target to a reference conformation.
+# 
+# lprmsd(target, reference[, frame, …])
+# 
+# Compute Linear-Programming Root-Mean-Squared Deviation (LP-RMSD) of all conformations in target to a reference
+            try:
+                traj = md.load('trajectory.dcd',top='output.pdb')
+
+                update_radiusOfGyration(self)
+                update_centerOfGeometry(self)
+                update_totalMass(self)
+                update_centerOfMass(self)
+                update_totalCharge(self)
+            except Exception as e:
+                window.textBrowser_13.append(f"ERROR: {e}")
             
     class simulation_tab:
         def __init__(self, MainMainWindow):
