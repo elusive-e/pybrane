@@ -1,4 +1,5 @@
 **Welcome to PyBRANE: Python Based Reasearch/ANalysis Engine (For Computational Chemistry)!**
+NEW UPDATE COMING SOON!!!!!! PRE BETA RELEASE EXPECTED AROUND SEPTEMBER!!!
 
 LICENSE: Apache 2. Read more here: https://www.apache.org/licenses/LICENSE-2.0.html
 
@@ -78,3 +79,4 @@ Why did I choose to publish now? Well, now that i consider the project in beta p
 
 All in all, thanks for reading if you made it this far, here are some screenshots of ICONIC moments of the AI chatbot, Michael:
 *pictures will appear soon*
+
