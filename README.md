@@ -1,24 +1,41 @@
 **Welcome to PyBRANE: Python Based Reasearch/ANalysis Engine (For Computational Chemistry)!**
-NEW UPDATE COMING SOON!!!!!! PRE BETA RELEASE EXPECTED AROUND SEPTEMBER!!!
+New update coming as soon as I can figure out how to more efficiently delete old github files... I never update my files into github, but I have still been working on this actually! I've really gone so far since the orignial idea and I've been jam packing the code with new features and GUI updates!
+
+New features i'm working on:
+- Docker file setup for AMBERtools intergation!
+- Reworked membrane and input handling scripts with AMBER
+- additional customization for simulations and analysis with openmm and mdtraj
+- fully written guide to learn compuational chemistry with pybrane
+- JsMol interation for painless molecule viewing
+- wide variety of file types supported
+- 
+Features I hope to add before sunsetting the app:
+- simple and advanced modes
+- chat bot
+- remaking the file search system rest API request format
+- remaking the splash screen art
+- actually documenting the code 
 
 LICENSE: Apache 2. Read more here: https://www.apache.org/licenses/LICENSE-2.0.html
 
 Thanks for checking this out!
 
+OLD INFORMATION (VERY OUTDATED)
+
 **Overview:**
   - GUI with rich functionality*
-  - 🌟 Visual outputs of molecules with mouse support*
+  - 🌟 Visual outputs of molecules with mouse support
   - 2D and 3D views of molecules
   - Ability to build bond and atoms with menus
   - 🌟Functional section that allows for the building of a custom biological membrane with backend scripts
   - Error logs and error handling help the program avoid crashing
-  - Web file retrival*
-  - 🌟Shell section for running commands in the program
+  - Web file retrival
+  - Shell section for running commands in the program
   - Simulation tab powered by OpenMM*
   - 🌟Analysis Engine with automatic graphs detailing the results of the experiment*
   - Chat bot to help with inquires*
-items marked with * are currently REALLY buggy (pre-beta)
 items marked with 🌟 are highlight features
+* features still in development
 
 **How this program was created:**
 I'm elusive E and im a highschooler from the eastern seaboard. When i went to the science fair last year, i was very intrigued by the molecular simulation projects and how they got such high marks. I was also really confused when one guy next to me was told he needed to do more of the project himself and he had a computational biology project with GROMACS...
@@ -53,7 +70,7 @@ Conda/miniconda works great for me, and allows you to download a lot of fun stuf
 
 Link to the official documentation: https://docs.anaconda.com/miniconda/
 
-Python version I wrote in: 3.11.5 (used to be higher, then i ducked up my virtual enviorment and couldn't fix it)
+Python version I wrote in: 3.11.5 (used to be higher, then i messed up my virtual enviorment and couldn't fix it)
 
 Once you get miniconda, install the requirments in requirments.txt, and you should be good to go. Run the main.py script, I've gone through several migranes with passing functions back and forth, so everything should get set up automatically.
 
@@ -79,4 +96,5 @@ Why did I choose to publish now? Well, now that i consider the project in beta p
 
 All in all, thanks for reading if you made it this far, here are some screenshots of ICONIC moments of the AI chatbot, Michael:
 *pictures will appear soon*
+
 
